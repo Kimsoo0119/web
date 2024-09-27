@@ -10,6 +10,7 @@ import { IPlace } from "../apis/interface/place.interface";
 import PlaceDetail from "../components/PlaceDetail";
 import DummyInput from "../components/DummySearchInput";
 import { BackButton } from "../components/BackButton";
+import ReactGA from "react-ga4";
 
 declare global {
   interface Window {
@@ -134,6 +135,10 @@ const MainScreen: React.FC = () => {
 
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && !selectedPlace) {
+        ReactGA.event({
+          category: "Place",
+          action: "loadMore",
+        });
         handleLoadMore();
       }
     }, options);

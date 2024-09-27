@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import MainScreen from "./screens/Main";
 import SearchScreen from "./screens/Search";
 import SurveyModal from "./components/SurveyModal";
+import Analytics from "./components/GoogleAnalytics";
+import ReactGA from "react-ga4";
+const ENV = import.meta.env;
 
-function App() {
+function AppContent() {
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
   const [surveyTimer, setSurveyTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [delay, setDelay] = useState(10000);
   const deferTime = 10000;
+  ReactGA.initialize(ENV.VITE_GOOGLE_ANALYTICS_ID);
+
+  const location = useLocation();
+  Analytics(location);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -33,6 +40,10 @@ function App() {
   };
 
   const handleDeferSurveyModal = () => {
+    ReactGA.event({
+      category: "User",
+      action: "SurveyDeferClick",
+    });
     setIsSurveyModalOpen(false);
     if (surveyTimer) {
       clearTimeout(surveyTimer);
@@ -46,7 +57,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <>
       <Routes>
         <Route path="/" element={<MainScreen />} />
         <Route path="/search" element={<SearchScreen />} />
@@ -56,6 +67,14 @@ function App() {
         onClose={handleCloseSurveyModal}
         onDefer={handleDeferSurveyModal}
       />
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }
