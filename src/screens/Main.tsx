@@ -79,11 +79,18 @@ const MainScreen: React.FC = () => {
 
   const { places, loading, error, loadMore, hasMore } = usePlacesWithToilets();
 
-  const handleLoadMore = useCallback(() => {
-    if (!loading && hasMore) {
-      loadMore();
+  const handleBottomSheetHeightChange = useCallback((height: number) => {
+    const bottomSheetPercentage = (height / WindowSize.height) * 100;
+    let newMapHeight = 100 - bottomSheetPercentage;
+
+    if (bottomSheetPercentage <= 20) {
+      newMapHeight = 80;
+    } else if (bottomSheetPercentage >= 75) {
+      newMapHeight = 30;
     }
-  }, [loading, hasMore, loadMore]);
+
+    setMapHeight(newMapHeight);
+  }, []);
 
   useEffect(() => {
     const mapOptions = {
@@ -92,14 +99,6 @@ const MainScreen: React.FC = () => {
     };
     mapRef.current = new window.naver.maps.Map("naverMap", mapOptions);
   }, []);
-
-  useEffect(() => {
-    if (mapRef.current) {
-      const currentCenter = mapRef.current.getCenter();
-      window.naver.maps.Event.trigger(mapRef.current, "resize");
-      mapRef.current.setCenter(currentCenter);
-    }
-  }, [mapHeight]);
 
   useEffect(() => {
     if (mapRef.current && mapCenter) {
@@ -115,6 +114,14 @@ const MainScreen: React.FC = () => {
 
   useEffect(() => {
     if (mapRef.current) {
+      const currentCenter = mapRef.current.getCenter();
+      window.naver.maps.Event.trigger(mapRef.current, "resize");
+      mapRef.current.setCenter(currentCenter);
+    }
+  }, [mapHeight]);
+
+  useEffect(() => {
+    if (mapRef.current) {
       const listener = window.naver.maps.Event.addListener(
         mapRef.current,
         "dragend",
@@ -126,6 +133,16 @@ const MainScreen: React.FC = () => {
     }
   }, [updateMapCenter]);
 
+  const handleLoadMore = useCallback(() => {
+    if (!loading && hasMore) {
+      ReactGA.event({
+        category: "Place",
+        action: "loadMore",
+      });
+      loadMore();
+    }
+  }, [loading, hasMore, loadMore]);
+
   useEffect(() => {
     const options = {
       root: null,
@@ -135,10 +152,6 @@ const MainScreen: React.FC = () => {
 
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && !selectedPlace) {
-        ReactGA.event({
-          category: "Place",
-          action: "loadMore",
-        });
         handleLoadMore();
       }
     }, options);
@@ -153,19 +166,6 @@ const MainScreen: React.FC = () => {
       }
     };
   }, [handleLoadMore, selectedPlace]);
-
-  const handleBottomSheetHeightChange = useCallback((height: number) => {
-    const bottomSheetPercentage = (height / WindowSize.height) * 100;
-    let newMapHeight = 100 - bottomSheetPercentage;
-
-    if (bottomSheetPercentage <= 20) {
-      newMapHeight = 80;
-    } else if (bottomSheetPercentage >= 75) {
-      newMapHeight = 30;
-    }
-
-    setMapHeight(newMapHeight);
-  }, []);
 
   useEffect(() => {
     if (mapRef.current && selectedPlace) {

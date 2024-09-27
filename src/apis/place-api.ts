@@ -4,8 +4,6 @@ import { fetchToServer } from "./api";
 import { IPaginationParams } from "./interface/common-api.interface";
 import { IPlace, ISearchResultItem } from "./interface/place.interface";
 
-const ENV = import.meta.env;
-
 export class PlaceApi {
   static async getPlaceWithToiletList({
     take = 20,

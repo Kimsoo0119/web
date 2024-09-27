@@ -30,6 +30,7 @@ const Modal: React.FC<ModalProps> = ({
 };
 
 export default Modal;
+
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -48,8 +49,10 @@ const ModalContent = styled.div<{ style?: React.CSSProperties }>`
   padding: 20px;
   border-radius: 8px;
   position: relative;
-  width: ${WindowSize.width * 0.8}px; /* WindowSize.width를 사용하여 너비 설정 */
-  max-width: 100%; /* 최대 너비를 100%로 설정하여 화면을 넘지 않도록 함 */
+  width: ${WindowSize.width * 0.8}px;
+  max-width: 600px;
+  max-height: ${WindowSize.height * 0.9}px;
+  overflow-y: auto;
   ${({ style }) =>
     style &&
     `

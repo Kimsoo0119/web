@@ -9,41 +9,44 @@ import ReactGA from "react-ga4";
 const ENV = import.meta.env;
 
 function AppContent() {
-  const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
-  const [surveyTimer, setSurveyTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
-  const [delay, setDelay] = useState(10000);
-  const deferTime = 10000;
   ReactGA.initialize(ENV.VITE_GOOGLE_ANALYTICS_ID);
-
   const location = useLocation();
   Analytics(location);
+  const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
+  const [surveyTimer, setSurveyTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [delay, setDelay] = useState(150000);
+  const deferTime = 150000;
+
+  const [surveySubmitted, setSurveySubmitted] = useState(() => {
+    const saved = localStorage.getItem("surveySubmitted");
+    return saved ? JSON.parse(saved) : false;
+  });
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsSurveyModalOpen(true);
-    }, delay);
+    localStorage.setItem("surveySubmitted", JSON.stringify(surveySubmitted));
+  }, [surveySubmitted]);
 
-    setSurveyTimer(timer);
+  useEffect(() => {
+    if (!surveySubmitted) {
+      const timer = setTimeout(() => {
+        setIsSurveyModalOpen(true);
+      }, delay);
 
-    return () => clearTimeout(timer);
-  }, [delay]);
+      setSurveyTimer(timer);
 
-  const handleCloseSurveyModal = () => {
+      return () => clearTimeout(timer);
+    }
+  }, [delay, surveySubmitted]);
+
+  const handleCloseSurveyModal = (submitted = false) => {
     setIsSurveyModalOpen(false);
     if (surveyTimer) {
       clearTimeout(surveyTimer);
     }
-    const newTimer = setTimeout(() => {
-      setIsSurveyModalOpen(true);
-    }, delay);
-    setSurveyTimer(newTimer);
+    setSurveySubmitted(true);
   };
 
   const handleDeferSurveyModal = () => {
-    ReactGA.event({
-      category: "User",
-      action: "SurveyDeferClick",
-    });
     setIsSurveyModalOpen(false);
     if (surveyTimer) {
       clearTimeout(surveyTimer);

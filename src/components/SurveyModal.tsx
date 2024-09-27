@@ -4,6 +4,7 @@ import Modal from "./Modal";
 import Divider from "./Divider";
 import { WindowSize } from "../constants/const";
 import ReactGA from "react-ga4";
+import SurveyApi from "../apis/survey-api";
 interface SurveyModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -17,27 +18,51 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ isOpen, onClose, onDefer }) =
   const [gender, setGender] = useState("");
   const otherReasonInputRef = useRef<HTMLInputElement>(null);
 
+  const resetState = () => {
+    setReason("");
+    setOtherReason("");
+    setComments("");
+    setGender("");
+  };
+
   useEffect(() => {
     if (reason === "기타" && otherReasonInputRef.current) {
       otherReasonInputRef.current.focus();
     }
   }, [reason]);
 
+  const isSubmitDisabled = !gender || !reason;
+
   const handleSubmit = () => {
     ReactGA.event({
       category: "User",
       action: "SurveySubmitClick",
     });
-
+    SurveyApi.submitSurvey({
+      gender,
+      reason,
+      otherReason,
+      comments,
+    });
     onClose();
+    resetState();
+  };
+
+  const handleDefer = () => {
+    ReactGA.event({
+      category: "User",
+      action: "SurveyDeferClick",
+    });
+    resetState();
+    onDefer();
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} showCloseButton={false}>
       <SurveyContainer>
-        <h2>의견을 남겨주세요!</h2>
+        <h2 style={{ margin: "8px 0" }}>의견을 남겨주세요!</h2>
 
-        <SurveyQuestion>성별</SurveyQuestion>
+        <SurveyQuestion>성별 *</SurveyQuestion>
         <GenderList>
           {["남성", "여성", "기타"].map((item) => (
             <GenderItem key={item} selected={gender === item} onClick={() => setGender(item)}>
@@ -48,7 +73,7 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ isOpen, onClose, onDefer }) =
 
         <Divider margin="2px" />
 
-        <SurveyQuestion>사이트에 들어오게 된 이유는 무엇인가요?</SurveyQuestion>
+        <SurveyQuestion>사이트에 들어오게 된 이유는 무엇인가요? *</SurveyQuestion>
         <ReasonList>
           {[
             "어떤 정보가 있는지 궁금해서",
@@ -77,12 +102,14 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ isOpen, onClose, onDefer }) =
 
         <Divider margin="2px" />
 
-        <SurveyQuestion>추가 의견을 남겨주세요</SurveyQuestion>
+        <SurveyQuestion>추가 의견이 있으실 경우 입력해주세요</SurveyQuestion>
         <StyledTextarea value={comments} onChange={(e) => setComments(e.target.value)} />
 
         <ButtonContainer>
-          <DeferButton onClick={onDefer}>나중에 하기</DeferButton>
-          <SubmitButton onClick={handleSubmit}>제출하기</SubmitButton>
+          <DeferButton onClick={handleDefer}>나중에 하기</DeferButton>
+          <SubmitButton onClick={handleSubmit} disabled={isSubmitDisabled}>
+            제출하기
+          </SubmitButton>
         </ButtonContainer>
       </SurveyContainer>
     </Modal>
@@ -101,7 +128,6 @@ const SurveyContainer = styled.div`
 const SurveyQuestion = styled.p`
   font-size: 1rem;
   font-weight: bold;
-  margin-bottom: 5px;
 `;
 
 const ReasonList = styled.ul`
@@ -168,7 +194,7 @@ const StyledTextarea = styled.textarea`
   border: 1px solid #ccc;
   border-radius: 5px;
   resize: vertical;
-  min-height: 100px;
+  min-height: ${WindowSize.height * 0.2};
 `;
 
 const ButtonContainer = styled.div`
@@ -188,17 +214,6 @@ const SubmitButton = styled.button`
   width: 50%;
   &:hover {
     background-color: #0056b3;
-  }
-`;
-
-const Button = styled.button`
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  &:hover {
-    opacity: 0.8;
   }
 `;
 

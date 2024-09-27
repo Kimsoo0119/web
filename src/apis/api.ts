@@ -23,7 +23,7 @@ async function fetchWithRetry(
   options?: RequestInit
 ): Promise<Response> {
   try {
-    const url = `${ENV.VITE_API_SERVER_URL}/${path}`;
+    const url = `http://localhost:3005/${path}`;
 
     let response = await fetch(url, {
       credentials: "include",
