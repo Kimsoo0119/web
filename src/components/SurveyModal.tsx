@@ -22,6 +22,7 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ isOpen, onClose, onDefer }) =
 
   const resetState = () => {
     setReason("");
+    setAge("");
     setOtherReason("");
     setComments("");
     setGender("");
@@ -33,7 +34,7 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ isOpen, onClose, onDefer }) =
     }
   }, [reason]);
 
-  const isSubmitDisabled = !gender || !reason;
+  const isSubmitDisabled = !gender || !reason || !age;
 
   const handleSubmit = () => {
     ReactGA.event({
@@ -43,6 +44,7 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ isOpen, onClose, onDefer }) =
     SurveyApi.submitSurvey({
       gender,
       reason,
+      age,
       otherReason,
       comments,
     });
