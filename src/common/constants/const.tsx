@@ -18,4 +18,6 @@ export const ColorPalette = {
   DarkGray: "#666",
   Gray: "#ddd",
   LightGray: "#f0f0f0",
+  BrandColor: "#fb6107",
+  BrandColorHover: "#febe98",
 };

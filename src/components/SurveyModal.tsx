@@ -5,6 +5,7 @@ import Divider from "./Divider";
 import { WindowSize } from "../constants/const";
 import ReactGA from "react-ga4";
 import SurveyApi from "../apis/survey-api";
+import { ColorPalette } from "../common/constants/const";
 interface SurveyModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -16,6 +17,7 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ isOpen, onClose, onDefer }) =
   const [otherReason, setOtherReason] = useState("");
   const [comments, setComments] = useState("");
   const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
   const otherReasonInputRef = useRef<HTMLInputElement>(null);
 
   const resetState = () => {
@@ -70,39 +72,43 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ isOpen, onClose, onDefer }) =
             </GenderItem>
           ))}
         </GenderList>
+        <SurveyQuestion>나이 *</SurveyQuestion>
+        <GenderList>
+          {["20대", "30대", "40대", "50대 이상"].map((item) => (
+            <GenderItem key={item} selected={age === item} onClick={() => setAge(item)}>
+              {item}
+            </GenderItem>
+          ))}
+        </GenderList>
 
         <Divider margin="2px" />
 
         <SurveyQuestion>사이트에 들어오게 된 이유는 무엇인가요? *</SurveyQuestion>
         <ReasonList>
-          {[
-            "어떤 정보가 있는지 궁금해서",
-            "화장실에 대한 정보를 얻기 위해",
-            "우연히 발견해서",
-            "깨끗한 화장실 위치를 알고 싶어서",
-            "기타",
-          ].map((item, index) => (
-            <ReasonItem key={item} selected={reason === item} onClick={() => setReason(item)}>
-              {index + 1}) {item}
-              {item === "기타" && reason === "기타" && (
-                <OtherReasonInputWrapper>
-                  <OtherReasonInput
-                    ref={otherReasonInputRef}
-                    type="text"
-                    placeholder="이유를 입력해주세요"
-                    value={otherReason}
-                    onChange={(e) => setOtherReason(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </OtherReasonInputWrapper>
-              )}
-            </ReasonItem>
-          ))}
+          {["어떤 정보가 있는지 궁금해서", "화장실에서 불편했던 경험이 있어서", "기타"].map(
+            (item, index) => (
+              <ReasonItem key={item} selected={reason === item} onClick={() => setReason(item)}>
+                {index + 1}) {item}
+                {item === "기타" && reason === "기타" && (
+                  <OtherReasonInputWrapper>
+                    <OtherReasonInput
+                      ref={otherReasonInputRef}
+                      type="text"
+                      placeholder="이유를 입력해주세요"
+                      value={otherReason}
+                      onChange={(e) => setOtherReason(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </OtherReasonInputWrapper>
+                )}
+              </ReasonItem>
+            )
+          )}
         </ReasonList>
 
         <Divider margin="2px" />
 
-        <SurveyQuestion>추가 의견이 있으실 경우 입력해주세요</SurveyQuestion>
+        <SurveyQuestion>무엇을 기대하고 오셨나요?</SurveyQuestion>
         <StyledTextarea value={comments} onChange={(e) => setComments(e.target.value)} />
 
         <ButtonContainer>
@@ -149,30 +155,24 @@ const ReasonItem = styled.li<{ selected: boolean }>`
   cursor: pointer;
   padding: 10px;
   margin-bottom: 10px;
-  border: 1px solid ${(props) => (props.selected ? "#007bff" : "#ccc")};
+  border: 1px solid ${(props) => (props.selected ? ColorPalette.BrandColor : "#ccc")};
   border-radius: 5px;
-  background-color: ${(props) => (props.selected ? "#e7f1ff" : "white")};
-  color: ${(props) => (props.selected ? "#007bff" : "black")};
-  font-weight: ${(props) => (props.selected ? "bold" : "normal")};
+  background-color: ${(props) => (props.selected ? "#FFE9DC" : "white")};
+  color: ${(props) => (props.selected ? ColorPalette.BrandColor : "black")};
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  &:hover {
-    background-color: #f1f1f1;
-  }
+  font-size: 14px;
 `;
 
 const GenderItem = styled.li<{ selected: boolean }>`
   cursor: pointer;
-  padding: 10px 20px;
-  border: 1px solid ${(props) => (props.selected ? "#007bff" : "#ccc")};
+  padding: 6px 14px;
+  border: 1px solid ${(props) => (props.selected ? ColorPalette.BrandColor : "#ccc")};
   border-radius: 5px;
-  background-color: ${(props) => (props.selected ? "#e7f1ff" : "white")};
-  color: ${(props) => (props.selected ? "#007bff" : "black")};
-  font-weight: ${(props) => (props.selected ? "bold" : "normal")};
-  &:hover {
-    background-color: #f1f1f1;
-  }
+  background-color: ${(props) => (props.selected ? "#FFE9DC" : "white")};
+  color: ${(props) => (props.selected ? ColorPalette.BrandColor : "black")};
+  font-size: 14px;
 `;
 
 const OtherReasonInputWrapper = styled.div`
@@ -204,8 +204,8 @@ const ButtonContainer = styled.div`
 `;
 
 const SubmitButton = styled.button`
-  background-color: #007bff;
-  color: white;
+  background-color: ${ColorPalette.BrandColor};
+  color: ${ColorPalette.White};
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
@@ -213,12 +213,12 @@ const SubmitButton = styled.button`
   font-size: 16px;
   width: 50%;
   &:hover {
-    background-color: #0056b3;
+    background-color: #febe98;
   }
 `;
 
 const DeferButton = styled.button`
-  background-color: #6c757d;
+  background-color: #5a6268;
   color: white;
   border: none;
   padding: 10px 20px;

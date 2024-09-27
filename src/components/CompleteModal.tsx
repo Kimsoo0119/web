@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Modal from "./Modal";
+import { ColorPalette } from "../common/constants/const";
 
 interface CompletionModalProps {
   isOpen: boolean;
@@ -35,7 +36,7 @@ const CompletionContainer = styled.div`
 `;
 
 const CloseButton = styled.button`
-  background-color: #007bff;
+  background-color: ${ColorPalette.BrandColor};
   color: white;
   border: none;
   padding: 10px 20px;
@@ -44,7 +45,7 @@ const CloseButton = styled.button`
   font-size: 16px;
   margin-top: 20px;
   &:hover {
-    background-color: #0056b3;
+    background-color: ${ColorPalette.BrandColorHover};
   }
 `;
 
