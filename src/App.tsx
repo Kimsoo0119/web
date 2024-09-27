@@ -16,8 +16,8 @@ function AppContent() {
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
   const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
   const [surveyTimer, setSurveyTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
-  const [delay, setDelay] = useState(15000);
-  const deferTime = 15000;
+  const [delay, setDelay] = useState(5000);
+  const deferTime = 20000;
 
   const [surveySubmitted, setSurveySubmitted] = useState(() => {
     const saved = localStorage.getItem("surveySubmitted");
