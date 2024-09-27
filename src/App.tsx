@@ -6,6 +6,7 @@ import SearchScreen from "./screens/Search";
 import SurveyModal from "./components/SurveyModal";
 import Analytics from "./components/GoogleAnalytics";
 import ReactGA from "react-ga4";
+import CompletionModal from "./components/CompleteModal";
 const ENV = import.meta.env;
 
 function AppContent() {
@@ -13,9 +14,10 @@ function AppContent() {
   const location = useLocation();
   Analytics(location);
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
+  const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
   const [surveyTimer, setSurveyTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
-  const [delay, setDelay] = useState(150000);
-  const deferTime = 150000;
+  const [delay, setDelay] = useState(15000);
+  const deferTime = 15000;
 
   const [surveySubmitted, setSurveySubmitted] = useState(() => {
     const saved = localStorage.getItem("surveySubmitted");
@@ -38,12 +40,13 @@ function AppContent() {
     }
   }, [delay, surveySubmitted]);
 
-  const handleCloseSurveyModal = (submitted = false) => {
+  const handleCloseSurveyModal = () => {
     setIsSurveyModalOpen(false);
     if (surveyTimer) {
       clearTimeout(surveyTimer);
     }
     setSurveySubmitted(true);
+    setIsCompletionModalOpen(true);
   };
 
   const handleDeferSurveyModal = () => {
@@ -59,6 +62,10 @@ function AppContent() {
     setSurveyTimer(newTimer);
   };
 
+  const handleCloseCompletionModal = () => {
+    setIsCompletionModalOpen(false);
+  };
+
   return (
     <>
       <Routes>
@@ -69,6 +76,13 @@ function AppContent() {
         isOpen={isSurveyModalOpen}
         onClose={handleCloseSurveyModal}
         onDefer={handleDeferSurveyModal}
+      />
+      <CompletionModal
+        isOpen={isCompletionModalOpen}
+        onClose={handleCloseCompletionModal}
+        title="제출 완료"
+        description={`제출해 주셔서 감사합니다!
+더 나은 서비스로 찾아뵙겠습니다😀`}
       />
     </>
   );

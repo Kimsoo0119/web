@@ -4,7 +4,6 @@ import Modal from "./Modal";
 import Divider from "./Divider";
 import { WindowSize } from "../constants/const";
 import ReactGA from "react-ga4";
-import SurveyApi from "../apis/survey-api";
 interface SurveyModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -34,16 +33,16 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ isOpen, onClose, onDefer }) =
   const isSubmitDisabled = !gender || !reason;
 
   const handleSubmit = () => {
-    ReactGA.event({
-      category: "User",
-      action: "SurveySubmitClick",
-    });
-    SurveyApi.submitSurvey({
-      gender,
-      reason,
-      otherReason,
-      comments,
-    });
+    // ReactGA.event({
+    //   category: "User",
+    //   action: "SurveySubmitClick",
+    // });
+    // SurveyApi.submitSurvey({
+    //   gender,
+    //   reason,
+    //   otherReason,
+    //   comments,
+    // });
     onClose();
     resetState();
   };
